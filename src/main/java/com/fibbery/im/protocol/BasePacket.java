@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public abstract class BasePacket {
 
-    private Byte version = 1;
+    private transient Byte version = 1;
 
     public abstract byte getCommand();
 }
