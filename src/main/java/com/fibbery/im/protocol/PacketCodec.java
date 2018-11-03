@@ -1,15 +1,15 @@
 package com.fibbery.im.protocol;
 
-import com.fibbery.im.protocol.request.LoginRequest;
-import com.fibbery.im.protocol.response.LoginResponse;
-import com.fibbery.im.serialize.JsonSerializer;
 import com.fibbery.im.serialize.Serializer;
 import com.fibbery.im.serialize.SerializerAlgorithm;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import org.reflections.Reflections;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 数据包 编码/解码器
@@ -21,7 +21,7 @@ public class PacketCodec {
 
     public static PacketCodec INSTANCE = new PacketCodec();
 
-    public static final int MAGIC_NUM = 0x12345678;
+    private static final int MAGIC_NUM = 0x12345678;
 
     /**
      * 序列化方式
@@ -34,11 +34,40 @@ public class PacketCodec {
     private static Map<Byte, Class<? extends BasePacket>> packetTypeMap;
 
     static {
+        Reflections reflections = new Reflections("com.fibbery");
+
+        //载入序列化方式
         serializerMap = new HashMap<>();
-        serializerMap.put(SerializerAlgorithm.JSON, new JsonSerializer());
+        Set<Class<? extends Serializer>> clazzes = reflections.getSubTypesOf(Serializer.class);
+        for (Class<? extends Serializer> clazz : clazzes) {
+            boolean isAbstrace = Modifier.isAbstract(clazz.getModifiers());
+            if (isAbstrace) {
+                continue;
+            }
+            try {
+                Serializer serializer = clazz.newInstance();
+                serializerMap.put(serializer.getAlgorithm(), serializer);
+            } catch (Exception e) {
+                System.err.println(clazz.getSimpleName() + "无空构造，不进行录入");
+            }
+
+        }
+
+        //载入数据包格式
         packetTypeMap = new HashMap<>();
-        packetTypeMap.put(Command.LOGIN_REQUEST_COMAMND, LoginRequest.class);
-        packetTypeMap.put(Command.LOGIN_RESPONSE_COMMAND, LoginResponse.class);
+        Set<Class<? extends BasePacket>> classes = reflections.getSubTypesOf(BasePacket.class);
+        for (Class<? extends BasePacket> clazz : classes) {
+            boolean isAbstrace = Modifier.isAbstract(clazz.getModifiers());
+            if (isAbstrace) {
+                continue;
+            }
+            try {
+                BasePacket packet = clazz.newInstance();
+                packetTypeMap.put(packet.getCommand(), clazz);
+            } catch (Exception e) {
+                System.err.println(clazz.getSimpleName() + "无空构造，不进行录入");
+            }
+        }
     }
 
     /**

@@ -4,6 +4,8 @@ import com.fibbery.im.protocol.BasePacket;
 import com.fibbery.im.protocol.PacketCodec;
 import com.fibbery.im.protocol.request.LoginRequest;
 import com.fibbery.im.protocol.response.LoginResponse;
+import com.fibbery.im.protocol.response.MessageResponse;
+import com.fibbery.im.utils.LoginUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -35,9 +37,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             LoginResponse response = (LoginResponse) packet;
             if (response.isSuccess()) {
                 System.out.println(new Date() + " 用户成功登录");
+                LoginUtils.markLogin(ctx.channel());
             } else {
                 System.out.println(new Date() + " 用户登录失败");
             }
+        } else if (packet instanceof MessageResponse) {
+            MessageResponse response = (MessageResponse) packet;
+            System.out.println(new Date() + " 接收到服务端消息 >> " + response.getMessage());
         }
     }
 }
