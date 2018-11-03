@@ -3,7 +3,6 @@ package com.fibbery.im.protocol;
 import com.fibbery.im.serialize.Serializer;
 import com.fibbery.im.serialize.SerializerAlgorithm;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
@@ -75,11 +74,12 @@ public class PacketCodec {
      * |  魔法数字  |  协议版本  | 序列化方式  |  指令  |  数据长度  |  真实数据
      * 4byte       1byte      1byte      1byte     4byte
      *
+     *
+     * @param byteBuf
      * @param packet
      * @return
      */
-    public ByteBuf encode(BasePacket packet) {
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+    public void encode(BasePacket packet,ByteBuf byteBuf) {
 
         //魔法数
         byteBuf.writeInt(MAGIC_NUM);
@@ -90,7 +90,6 @@ public class PacketCodec {
         byte[] data = Serializer.DEFAULT.serialize(packet);
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
-        return byteBuf;
     }
 
 

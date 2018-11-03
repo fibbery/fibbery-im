@@ -1,5 +1,9 @@
 package com.fibbery.im.server;
 
+import com.fibbery.im.codec.PacketDecoder;
+import com.fibbery.im.codec.PacketEncoder;
+import com.fibbery.im.server.handler.LoginRequestHandler;
+import com.fibbery.im.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -26,7 +30,10 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ServerHandler());
+                        ch.pipeline().addLast(new PacketDecoder());
+                        ch.pipeline().addLast(new PacketEncoder());
+                        ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new MessageRequestHandler());
                     }
                 });
 

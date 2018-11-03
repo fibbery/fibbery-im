@@ -1,6 +1,9 @@
 package com.fibbery.im.client;
 
-import com.fibbery.im.protocol.PacketCodec;
+import com.fibbery.im.client.handler.LoginResponseHandler;
+import com.fibbery.im.client.handler.MessageResponseHandler;
+import com.fibbery.im.codec.PacketDecoder;
+import com.fibbery.im.codec.PacketEncoder;
 import com.fibbery.im.protocol.request.MessageRequest;
 import com.fibbery.im.utils.LoginUtils;
 import io.netty.bootstrap.Bootstrap;
@@ -38,7 +41,10 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ClientHandler());
+                ch.pipeline().addLast(new PacketEncoder());
+                ch.pipeline().addLast(new PacketDecoder());
+                ch.pipeline().addLast(new LoginResponseHandler());
+                ch.pipeline().addLast(new MessageResponseHandler());
             }
         });
 
@@ -67,13 +73,13 @@ public class NettyClient {
         new Thread(() -> {
             while (!Thread.interrupted()) {
                 if (LoginUtils.hasLogin(channel)) {
-                    System.out.print("输入信息：");
+                    System.out.println("输入信息发送到服务端：");
                     Scanner scanner = new Scanner(System.in);
                     String line = scanner.nextLine();
                     MessageRequest request = new MessageRequest();
                     request.setVersion((byte) 1);
                     request.setMessage(line);
-                    channel.writeAndFlush(PacketCodec.INSTANCE.encode(request));
+                    channel.writeAndFlush(request);
                 } else {
                     reLogin(channel);
                 }
