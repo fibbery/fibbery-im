@@ -11,6 +11,10 @@ import lombok.Data;
 @Data
 public class MessageResponse extends BasePacket {
 
+    private long senderId;
+
+    private long receiverId;
+
     private String message;
 
     @Override

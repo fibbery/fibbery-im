@@ -20,7 +20,7 @@ public class PacketCodec {
 
     public static PacketCodec INSTANCE = new PacketCodec();
 
-    private static final int MAGIC_NUM = 0x12345678;
+    public static final int MAGIC_NUM = 0x12345678;
 
     /**
      * 序列化方式

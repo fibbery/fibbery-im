@@ -2,6 +2,8 @@ package com.fibbery.im.server.handler;
 
 import com.fibbery.im.protocol.request.MessageRequest;
 import com.fibbery.im.protocol.response.MessageResponse;
+import com.fibbery.im.utils.SessionUtils;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -15,11 +17,16 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequest msg) throws Exception {
-        System.out.println(new Date() + " 接收到客户端消息 >> " + msg.getMessage());
 
         MessageResponse response = new MessageResponse();
-        response.setVersion(msg.getVersion());
-        response.setMessage("[服务端消息]");
-        ctx.channel().writeAndFlush(response);
+        response.setSenderId(SessionUtils.getSession(ctx.channel()).getUserId());
+        response.setReceiverId(msg.getReceiverId());
+        response.setMessage(msg.getMessage());
+        Channel channel = SessionUtils.getChannel(msg.getReceiverId());
+        if (channel != null) {
+            channel.writeAndFlush(response);
+        } else {
+            System.out.println(new Date() + "用户[" + msg.getReceiverId() + "]不在线");
+        }
     }
 }

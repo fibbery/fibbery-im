@@ -1,9 +1,10 @@
 package com.fibbery.im.server.handler;
 
-import com.fibbery.im.protocol.Attributes;
+import com.fibbery.im.protocol.Session;
 import com.fibbery.im.protocol.request.LoginRequest;
 import com.fibbery.im.protocol.response.LoginResponse;
-import com.fibbery.im.utils.LoginUtils;
+import com.fibbery.im.utils.SessionUtils;
+import com.fibbery.im.utils.UserUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -16,14 +17,24 @@ import java.util.Date;
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequest> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, LoginRequest msg) throws Exception {
-        System.out.println(new Date() + " " + msg.getUserName() + "登录成功！！！");
-        LoginUtils.markLogin(ctx.channel());
-        ctx.channel().attr(Attributes.USER_NAME).set(msg.getUserName());
+    protected void channelRead0(ChannelHandlerContext ctx, LoginRequest request) throws Exception {
+        String userName = UserUtils.getUserName(request.getUserId());
+        System.out.println(new Date() + "[" + userName + "]登录成功！！！");
+        Session session = new Session();
+        session.setUserId(request.getUserId());
+        session.setUserName(userName);
+        SessionUtils.bindSession(ctx.channel(), session);
 
         LoginResponse response = new LoginResponse();
-        response.setVersion(msg.getVersion());
+        response.setUserId(request.getUserId());
+        response.setUsername(userName);
         response.setSuccess(true);
         ctx.writeAndFlush(response);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        SessionUtils.unbindSession(ctx.channel());
+        super.channelInactive(ctx);
     }
 }

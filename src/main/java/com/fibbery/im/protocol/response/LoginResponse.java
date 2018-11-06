@@ -11,6 +11,10 @@ import lombok.Data;
 @Data
 public class LoginResponse extends BasePacket {
 
+    private Long userId;
+
+    private String username;
+
     private boolean success;
 
     private String message;
