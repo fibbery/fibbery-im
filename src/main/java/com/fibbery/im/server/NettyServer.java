@@ -3,9 +3,7 @@ package com.fibbery.im.server;
 import com.fibbery.im.codec.PacketDecoder;
 import com.fibbery.im.codec.PacketEncoder;
 import com.fibbery.im.codec.ProtocolFilter;
-import com.fibbery.im.server.handler.AuthHandler;
-import com.fibbery.im.server.handler.LoginRequestHandler;
-import com.fibbery.im.server.handler.MessageRequestHandler;
+import com.fibbery.im.server.handler.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -36,8 +34,10 @@ public class NettyServer {
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new PacketEncoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new LoginoutRequestHandler());
                         ch.pipeline().addLast(new AuthHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());
+                        ch.pipeline().addLast(new CreateGroupRequestHandler());
                     }
                 });
 

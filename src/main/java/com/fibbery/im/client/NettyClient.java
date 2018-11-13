@@ -1,11 +1,15 @@
 package com.fibbery.im.client;
 
 import com.fibbery.im.client.console.ConsoleCommandManager;
+import com.fibbery.im.client.console.LoginConsoleCommand;
+import com.fibbery.im.client.handler.CreateGroupResponseHandler;
 import com.fibbery.im.client.handler.LoginResponseHandler;
+import com.fibbery.im.client.handler.LoginoutResponseHandler;
 import com.fibbery.im.client.handler.MessageResponseHandler;
 import com.fibbery.im.codec.PacketDecoder;
 import com.fibbery.im.codec.PacketEncoder;
 import com.fibbery.im.codec.ProtocolFilter;
+import com.fibbery.im.utils.SessionUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -45,7 +49,9 @@ public class NettyClient {
                 ch.pipeline().addLast(new PacketEncoder());
                 ch.pipeline().addLast(new PacketDecoder());
                 ch.pipeline().addLast(new LoginResponseHandler());
+                ch.pipeline().addLast(new LoginoutResponseHandler());
                 ch.pipeline().addLast(new MessageResponseHandler());
+                ch.pipeline().addLast(new CreateGroupResponseHandler());
             }
         });
 
@@ -74,7 +80,11 @@ public class NettyClient {
         new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
             while (!Thread.interrupted()) {
-                ConsoleCommandManager.INSTANCE.exec(scanner, channel);
+                if (SessionUtils.hasLogin(channel)) {
+                    ConsoleCommandManager.INSTANCE.exec(scanner, channel);
+                } else {
+                    new LoginConsoleCommand().exec(scanner, channel);
+                }
             }
         }).start();
     }

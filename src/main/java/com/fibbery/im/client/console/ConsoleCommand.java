@@ -10,5 +10,7 @@ import java.util.Scanner;
  */
 public interface ConsoleCommand {
 
+    String getAlias();
+
     void exec(Scanner scanner, Channel channel);
 }

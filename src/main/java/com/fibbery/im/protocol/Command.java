@@ -16,4 +16,14 @@ public interface Command {
 
     byte MESSAGE_RESPONSE_COMMAND = 4;
 
+    /*创建群组*/
+    byte CREATE_GROUP_REQUEST_COMMAND = 5;
+
+    byte CREATE_GROUP_RESPONSE_COMMAND = 6;
+
+    /*登录退出*/
+    byte LOGIN_OUT_REQUEST_COMMAND = 7;
+
+    byte LOGIN_OUT_RESPONSE_COMMAND = 8;
+
 }

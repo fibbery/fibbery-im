@@ -3,6 +3,7 @@ package com.fibbery.im.server.handler;
 import com.fibbery.im.protocol.Session;
 import com.fibbery.im.protocol.request.LoginRequest;
 import com.fibbery.im.protocol.response.LoginResponse;
+import com.fibbery.im.utils.IDUtils;
 import com.fibbery.im.utils.SessionUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -27,7 +28,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
         if (!SessionUtils.hasLogin(ctx.channel())) {
             System.out.println(">>>> 服务端： [" + request.getUserName() + "]登录成功！！！");
             Session session = new Session();
-            session.setUserId(System.currentTimeMillis());
+            session.setUserId(IDUtils.generateID());
             session.setUserName(request.getUserName());
             SessionUtils.bindSession(ctx.channel(), session);
 
@@ -47,7 +48,10 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        SessionUtils.unbindSession(ctx.channel());
+        if (SessionUtils.hasLogin(ctx.channel())) {
+            System.out.println(">>> 服务端：用户" + SessionUtils.getSession(ctx.channel()).getUserName() + "断开连接");
+            SessionUtils.unbindSession(ctx.channel());
+        }
         super.channelInactive(ctx);
     }
 }
