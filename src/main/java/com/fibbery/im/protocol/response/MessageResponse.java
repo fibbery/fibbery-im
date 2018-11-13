@@ -13,6 +13,8 @@ public class MessageResponse extends BasePacket {
 
     private long senderId;
 
+    private String senderName;
+
     private long receiverId;
 
     private String message;

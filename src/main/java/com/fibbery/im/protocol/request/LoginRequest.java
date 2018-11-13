@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class LoginRequest extends BasePacket {
 
-    private Long userId;
+    private String userName;
 
     private String password;
 

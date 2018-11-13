@@ -1,13 +1,11 @@
 package com.fibbery.im.client;
 
+import com.fibbery.im.client.console.ConsoleCommandManager;
 import com.fibbery.im.client.handler.LoginResponseHandler;
 import com.fibbery.im.client.handler.MessageResponseHandler;
 import com.fibbery.im.codec.PacketDecoder;
 import com.fibbery.im.codec.PacketEncoder;
 import com.fibbery.im.codec.ProtocolFilter;
-import com.fibbery.im.protocol.request.LoginRequest;
-import com.fibbery.im.protocol.request.MessageRequest;
-import com.fibbery.im.utils.SessionUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -74,44 +72,10 @@ public class NettyClient {
 
     private static void startConsoleThread(Channel channel) {
         new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
             while (!Thread.interrupted()) {
-                //已经登录的情况进行发消息操作
-                if (SessionUtils.hasLogin(channel)) {
-                    Scanner scanner = new Scanner(System.in);
-                    System.out.println("发送用户id:");
-                    long userId = Long.parseLong(scanner.nextLine());
-                    System.out.println("发送内容:");
-                    String message = scanner.nextLine();
-
-                    MessageRequest request = new MessageRequest();
-                    request.setMessage(message);
-                    request.setReceiverId(userId);
-                    channel.writeAndFlush(request);
-                } else {
-                    Scanner scanner = new Scanner(System.in);
-                    System.out.println("输入用户id:");
-                    long userId = Long.parseLong(scanner.nextLine());
-
-                    LoginRequest request = new LoginRequest();
-                    request.setUserId(userId);
-                    request.setPassword("pwd");
-                    channel.writeAndFlush(request);
-
-                    //wait for login
-                    try {
-                        TimeUnit.SECONDS.sleep(2);
-                    } catch (InterruptedException e) {
-                    }
-                }
+                ConsoleCommandManager.INSTANCE.exec(scanner, channel);
             }
         }).start();
-    }
-
-    /**
-     * 重新登录
-     * @param channel
-     */
-    private static void reLogin(Channel channel) {
-
     }
 }
