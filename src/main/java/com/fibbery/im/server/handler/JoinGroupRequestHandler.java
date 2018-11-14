@@ -3,6 +3,7 @@ package com.fibbery.im.server.handler;
 import com.fibbery.im.protocol.request.JoinGroupRequest;
 import com.fibbery.im.protocol.response.JoinGroupResponse;
 import com.fibbery.im.utils.SessionUtils;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
@@ -11,7 +12,10 @@ import io.netty.channel.group.ChannelGroup;
  * @author fibbery
  * @date 2018/11/14
  */
+@ChannelHandler.Sharable
 public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGroupRequest> {
+
+    public static final JoinGroupRequestHandler INSTANCE = new JoinGroupRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, JoinGroupRequest msg) throws Exception {

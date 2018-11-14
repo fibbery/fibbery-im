@@ -3,6 +3,7 @@ package com.fibbery.im.server.handler;
 import com.fibbery.im.protocol.request.LoginoutRequest;
 import com.fibbery.im.protocol.response.LoginoutResponse;
 import com.fibbery.im.utils.SessionUtils;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -10,7 +11,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author fibbery
  * @date 2018/11/13
  */
+@ChannelHandler.Sharable
 public class LoginoutRequestHandler extends SimpleChannelInboundHandler<LoginoutRequest> {
+
+    public static final LoginoutRequestHandler INSTANCE = new LoginoutRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginoutRequest msg) throws Exception {

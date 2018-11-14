@@ -3,6 +3,7 @@ package com.fibbery.im.client.handler;
 import com.fibbery.im.protocol.Session;
 import com.fibbery.im.protocol.response.LoginResponse;
 import com.fibbery.im.utils.SessionUtils;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -10,7 +11,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author fibbery
  * @date 2018/11/3
  */
+@ChannelHandler.Sharable
 public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginResponse> {
+
+    public static final LoginResponseHandler INSTANCE = new LoginResponseHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginResponse response) throws Exception {

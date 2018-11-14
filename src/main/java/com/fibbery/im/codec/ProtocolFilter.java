@@ -6,7 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 /**
- * 拦截过滤掉非本类别协议
+ * 拦截过滤掉非本类别协议 stateful不可单例
  * @author fibbery
  * @date 2018/11/5
  */

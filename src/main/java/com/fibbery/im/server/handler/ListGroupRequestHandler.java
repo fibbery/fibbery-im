@@ -4,6 +4,7 @@ import com.fibbery.im.protocol.Session;
 import com.fibbery.im.protocol.request.ListGroupRequest;
 import com.fibbery.im.protocol.response.ListGroupResponse;
 import com.fibbery.im.utils.SessionUtils;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
@@ -15,7 +16,10 @@ import java.util.stream.Collectors;
  * @author fibbery
  * @date 2018/11/14
  */
+@ChannelHandler.Sharable
 public class ListGroupRequestHandler extends SimpleChannelInboundHandler<ListGroupRequest> {
+
+    public static final ListGroupRequestHandler INSTANCE = new ListGroupRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ListGroupRequest msg) throws Exception {

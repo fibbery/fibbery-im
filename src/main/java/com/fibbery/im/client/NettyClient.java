@@ -2,9 +2,8 @@ package com.fibbery.im.client;
 
 import com.fibbery.im.client.console.ConsoleCommandManager;
 import com.fibbery.im.client.console.LoginConsoleCommand;
-import com.fibbery.im.client.handler.*;
-import com.fibbery.im.codec.PacketDecoder;
-import com.fibbery.im.codec.PacketEncoder;
+import com.fibbery.im.client.handler.ClientImHandler;
+import com.fibbery.im.codec.PacketCodecHandler;
 import com.fibbery.im.codec.ProtocolFilter;
 import com.fibbery.im.utils.SessionUtils;
 import io.netty.bootstrap.Bootstrap;
@@ -43,16 +42,8 @@ public class NettyClient {
             @Override
             protected void initChannel(SocketChannel ch) {
                 ch.pipeline().addLast(new ProtocolFilter());
-                ch.pipeline().addLast(new PacketEncoder());
-                ch.pipeline().addLast(new PacketDecoder());
-                ch.pipeline().addLast(new LoginResponseHandler());
-                ch.pipeline().addLast(new LoginoutResponseHandler());
-                ch.pipeline().addLast(new MessageResponseHandler());
-                ch.pipeline().addLast(new CreateGroupResponseHandler());
-                ch.pipeline().addLast(new GroupMessageResponseHandler());
-                ch.pipeline().addLast(new QuitGroupResponseHandler());
-                ch.pipeline().addLast(new JoinGroupResponseHandler());
-                ch.pipeline().addLast(new ListGroupResponseHandler());
+                ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
+                ch.pipeline().addLast(ClientImHandler.INSTANCE);
             }
         });
 
