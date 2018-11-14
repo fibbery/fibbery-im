@@ -15,7 +15,7 @@ public class LoginoutResponseHandler extends SimpleChannelInboundHandler<Loginou
     protected void channelRead0(ChannelHandlerContext ctx, LoginoutResponse msg) throws Exception {
         if (msg.isSuccess()) {
             String userName = SessionUtils.getSession(ctx.channel()).getUserName();
-            System.out.println("---> 客户端：" + "用户" + userName + "登录退出!");
+            System.out.println("用户" + userName + "登录退出!");
         }
         SessionUtils.unbindSession(ctx.channel());
         System.out.println();

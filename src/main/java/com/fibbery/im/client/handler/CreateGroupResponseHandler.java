@@ -13,6 +13,6 @@ public class CreateGroupResponseHandler extends SimpleChannelInboundHandler<Crea
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, CreateGroupResponse msg) throws Exception {
-        System.out.println("---> 客户端：你加入了群组 " + msg.getGroupId() + ", 群组成员有：" + JSON.toJSONString(msg.getUsers().values()));
+        System.out.println("你加入了群组 " + msg.getGroupId() + ", 群组成员有：" + JSON.toJSONString(msg.getUsers().values()));
     }
 }

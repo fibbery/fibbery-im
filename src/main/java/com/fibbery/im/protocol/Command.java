@@ -26,4 +26,9 @@ public interface Command {
 
     byte LOGIN_OUT_RESPONSE_COMMAND = 8;
 
+    /*群消息*/
+    byte GROUP_MESSAGE_REQUEST_COMMAND = 9;
+
+    byte GROUP_MESSAGE_RESPONSE_COMMAND = 10;
+
 }

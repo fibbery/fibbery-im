@@ -2,10 +2,7 @@ package com.fibbery.im.client;
 
 import com.fibbery.im.client.console.ConsoleCommandManager;
 import com.fibbery.im.client.console.LoginConsoleCommand;
-import com.fibbery.im.client.handler.CreateGroupResponseHandler;
-import com.fibbery.im.client.handler.LoginResponseHandler;
-import com.fibbery.im.client.handler.LoginoutResponseHandler;
-import com.fibbery.im.client.handler.MessageResponseHandler;
+import com.fibbery.im.client.handler.*;
 import com.fibbery.im.codec.PacketDecoder;
 import com.fibbery.im.codec.PacketEncoder;
 import com.fibbery.im.codec.ProtocolFilter;
@@ -52,6 +49,7 @@ public class NettyClient {
                 ch.pipeline().addLast(new LoginoutResponseHandler());
                 ch.pipeline().addLast(new MessageResponseHandler());
                 ch.pipeline().addLast(new CreateGroupResponseHandler());
+                ch.pipeline().addLast(new GroupMessageResponseHandler());
             }
         });
 
@@ -69,7 +67,7 @@ public class NettyClient {
             } else {
                 int order = (MAX_RETRIES - retries) + 1;
                 int delay = 1 << order;
-                System.out.println("客户端将会在" + delay + "秒之后第" + order + "次尝试连接服务器");
+                System.out.println("将会在" + delay + "秒之后第" + order + "次尝试连接服务器");
                 bootstrap.config().group().schedule(() -> connect(bootstrap, host, port, retries - 1),
                         delay, TimeUnit.SECONDS);
             }

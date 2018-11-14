@@ -50,4 +50,8 @@ public class SessionUtils {
     public static void bindGroup(long groupId, ChannelGroup group) {
         USER_GROUPS.put(groupId, group);
     }
+
+    public static ChannelGroup getGroup(long groupId) {
+        return USER_GROUPS.get(groupId);
+    }
 }
