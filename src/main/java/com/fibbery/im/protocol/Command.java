@@ -31,4 +31,9 @@ public interface Command {
 
     byte GROUP_MESSAGE_RESPONSE_COMMAND = 10;
 
+    /*腿群*/
+    byte QUIT_GROUP_REQUEST_COMMAND = 11;
+
+    byte QUIT_GROUP_RESPONSE_COMMAND = 12;
+
 }

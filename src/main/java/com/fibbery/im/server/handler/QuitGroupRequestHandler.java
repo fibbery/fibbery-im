@@ -1,8 +1,7 @@
 package com.fibbery.im.server.handler;
 
-import com.fibbery.im.protocol.Session;
-import com.fibbery.im.protocol.request.GroupMessageRequest;
-import com.fibbery.im.protocol.response.GroupMessageResponse;
+import com.fibbery.im.protocol.request.QuitGroupRequest;
+import com.fibbery.im.protocol.response.QuitGroupResponse;
 import com.fibbery.im.utils.SessionUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -12,13 +11,13 @@ import io.netty.channel.group.ChannelGroup;
  * @author fibbery
  * @date 2018/11/14
  */
-public class GroupMessageRequestHandler extends SimpleChannelInboundHandler<GroupMessageRequest> {
+public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGroupRequest> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, GroupMessageRequest msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, QuitGroupRequest msg) throws Exception {
         ChannelGroup group = SessionUtils.getGroup(msg.getGroupId());
         if (group == null) {
-            GroupMessageResponse response = new GroupMessageResponse();
+            QuitGroupResponse response = new QuitGroupResponse();
             response.setSuccess(false);
             response.setMessage("群组不存在");
             ctx.channel().writeAndFlush(response);
@@ -26,20 +25,22 @@ public class GroupMessageRequestHandler extends SimpleChannelInboundHandler<Grou
         }
 
         if (!group.contains(ctx.channel())) {
-            GroupMessageResponse response = new GroupMessageResponse();
+            QuitGroupResponse response = new QuitGroupResponse();
             response.setSuccess(false);
-            response.setMessage("该用户不存在群组中");
+            response.setMessage("当前用户不在此群组");
             ctx.channel().writeAndFlush(response);
             return;
         }
 
-        Session sesson = SessionUtils.getSession(ctx.channel());
-        GroupMessageResponse response = new GroupMessageResponse();
+        QuitGroupResponse response = new QuitGroupResponse();
         response.setSuccess(true);
-        response.setMessage(msg.getMessage());
         response.setGroupId(msg.getGroupId());
-        response.setSenderId(sesson.getUserId());
-        response.setSenderName(sesson.getUserName());
+        String userName = SessionUtils.getSession(ctx.channel()).getUserName();
+        response.setMessage("用户" + userName + "从群组[" + msg.getGroupId() + "]退出");
         group.writeAndFlush(response);
+        group.remove(ctx.channel());
+
+
+
     }
 }

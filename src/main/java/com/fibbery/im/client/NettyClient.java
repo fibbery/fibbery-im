@@ -50,6 +50,7 @@ public class NettyClient {
                 ch.pipeline().addLast(new MessageResponseHandler());
                 ch.pipeline().addLast(new CreateGroupResponseHandler());
                 ch.pipeline().addLast(new GroupMessageResponseHandler());
+                ch.pipeline().addLast(new QuitGroupResponseHandler());
             }
         });
 
