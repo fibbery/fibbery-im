@@ -2,7 +2,11 @@ package com.fibbery.im.server;
 
 import com.fibbery.im.codec.PacketCodecHandler;
 import com.fibbery.im.codec.ProtocolFilter;
-import com.fibbery.im.server.handler.*;
+import com.fibbery.im.handler.IMIdleStateHandler;
+import com.fibbery.im.server.handler.AuthHandler;
+import com.fibbery.im.server.handler.HeartBeatRequestHandler;
+import com.fibbery.im.server.handler.LoginRequestHandler;
+import com.fibbery.im.server.handler.ServerImHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -29,9 +33,11 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new IMIdleStateHandler());
                         ch.pipeline().addLast(new ProtocolFilter());
                         ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
                         ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new HeartBeatRequestHandler());
                         ch.pipeline().addLast(new AuthHandler());
                         ch.pipeline().addLast(ServerImHandler.INSTANCE);
                     }

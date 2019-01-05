@@ -46,4 +46,7 @@ public interface Command {
 
     Byte LIST_GROUP_RESPONSE_COMMAND = 16;
 
+    /*心跳*/
+    Byte HEART_BEAT_REQUEST = 17;
+    Byte HEART_BEAT_RESPONSE = 18;
 }

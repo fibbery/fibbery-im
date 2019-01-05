@@ -3,8 +3,10 @@ package com.fibbery.im.client;
 import com.fibbery.im.client.console.ConsoleCommandManager;
 import com.fibbery.im.client.console.LoginConsoleCommand;
 import com.fibbery.im.client.handler.ClientImHandler;
+import com.fibbery.im.client.handler.HeartBeatHandler;
 import com.fibbery.im.codec.PacketCodecHandler;
 import com.fibbery.im.codec.ProtocolFilter;
+import com.fibbery.im.handler.IMIdleStateHandler;
 import com.fibbery.im.utils.SessionUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -41,9 +43,11 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
+                ch.pipeline().addLast(new IMIdleStateHandler());
                 ch.pipeline().addLast(new ProtocolFilter());
                 ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
                 ch.pipeline().addLast(ClientImHandler.INSTANCE);
+                ch.pipeline().addLast(new HeartBeatHandler());
             }
         });
 
